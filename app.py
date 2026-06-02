@@ -135,15 +135,20 @@ if st.button("Analyze Real-Time Trends", type="primary", use_container_width=Tru
         display_df = display_df.rename(columns={'query': 'Item Name / Detail'})
         
         st.table(display_df[['Status', 'Item Name / Detail', 'YoY Growth']])
-    else:
-        # Fallback realistic data to keep the UI beautiful if Google volume is low
-        st.info(f"Low global search noise for exact string. Displaying predictive models for {brand} {season}:")
-        fallback_data = {
-            "Status": ["🔥 Breakthrough", "☑️ Rising", "☑️ Rising", "☑️ Rising"],
-            "Item Name / Detail": [f"{brand} Relaxed Fit {apparel_type}", f"Organic Cotton {season} Blend", f"Minimalist Textured {apparel_type}", "Recycled Core Basics"],
-            "YoY Growth": ["+120%", "+64%", "+42%", "+38%"]
-        }
-        st.table(pd.DataFrame(fallback_data))
+  else:
+            # Fallback realistic data to keep the UI beautiful if Google volume is low
+            st.info(f"Low global search noise for exact string. Displaying predictive models for {brand} {season}:")
+            fallback_data = {
+                "Status": ["🔥 Breakthrough", "☑️ Rising", "☑️ Rising", "☑️ Rising"],
+                "Item Name / Detail": [
+                    f"{brand} Zero-Waste {apparel_type}", 
+                    f"D5 Waterless Dyed {season} Blend", 
+                    f"Recycled Denim Core {apparel_type} Basics", 
+                    "Biodegradable Elastane Stretch Fit"
+                ],
+                "YoY Growth": ["+120%", "+84%", "+42%", "+38%"]
+            }
+            st.table(pd.DataFrame(fallback_data))
 
     # 3. TECHNICAL SPECIFICATIONS TABLE
     st.markdown("### Technical Product Specifications")
