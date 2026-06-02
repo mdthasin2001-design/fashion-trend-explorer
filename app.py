@@ -1,7 +1,7 @@
 import streamlit as st
 from pytrends.request import TrendReq
 import pandas as pd
-import plotly.graph_objects as dict_to_graph # Using plotly for the custom bar chart
+import plotly.graph_objects as dict_to_graph
 import time
 
 # Page configuration
@@ -26,7 +26,6 @@ with col4:
     apparel_type = st.selectbox("Apparel Type", ["Top", "Bottom", "Outerwear", "Dress", "Jeans"])
 
 # --- TEXTILE SPECS GENERATOR ENGINE ---
-# Generates realistic technical specifications based on fabric engineering principles
 def get_textile_specs(season_input, apparel_input):
     specs = {
         "Primary Material": "100% Cotton",
@@ -59,14 +58,11 @@ def get_textile_specs(season_input, apparel_input):
     return specs
 
 # --- GOOGLE TRENDS FETCHING ENGINE ---
-@st.cache_data(ttl=3600) # Caches data for an hour so your app loads instantly on repeat searches
+@st.cache_data(ttl=3600)
 def fetch_live_trends(b, d, s, a):
     pytrends = TrendReq(hl='en-US', tz=360)
-    
-    # Try the highly narrow search phrase first
     query = f"{b} {s} {d} {a}".replace("All Brands ", "")
     
-    # Smart Fallback Engine: If too specific, try a broader consumer phrasing
     queries_to_try = [
         query,
         f"{b} {a}".replace("All Brands ", ""),
@@ -99,7 +95,6 @@ if st.button("Analyze Real-Time Trends", type="primary", use_container_width=Tru
     # 1. VISUAL CHART: Category Baseline vs Current Trend Score
     st.markdown("### Trend Velocity Index")
     
-    # Calculate a score dynamically based on whether trends are skyrocketing or steady
     trend_score = 88 if rising_df is not None else 60
     baseline_score = 65
     
@@ -128,27 +123,25 @@ if st.button("Analyze Real-Time Trends", type="primary", use_container_width=Tru
     # 2. RISING MICRO-TRENDS TABLE
     st.markdown("### Live Market Micro-Trends")
     if rising_df is not None and not rising_df.empty:
-        # Format the dataframe to match the dashboard look
         display_df = rising_df.head(4).copy()
         display_df['Status'] = display_df['value'].apply(lambda x: "🔥 Breakthrough" if (isinstance(x, str) or x > 300) else "☑️ Rising")
         display_df['YoY Growth'] = display_df['value'].apply(lambda x: f"+{x}%" if isinstance(x, int) else "Breakout")
         display_df = display_df.rename(columns={'query': 'Item Name / Detail'})
         
         st.table(display_df[['Status', 'Item Name / Detail', 'YoY Growth']])
-  else:
-            # Fallback realistic data to keep the UI beautiful if Google volume is low
-            st.info(f"Low global search noise for exact string. Displaying predictive models for {brand} {season}:")
-            fallback_data = {
-                "Status": ["🔥 Breakthrough", "☑️ Rising", "☑️ Rising", "☑️ Rising"],
-                "Item Name / Detail": [
-                    f"{brand} Zero-Waste {apparel_type}", 
-                    f"D5 Waterless Dyed {season} Blend", 
-                    f"Recycled Denim Core {apparel_type} Basics", 
-                    "Biodegradable Elastane Stretch Fit"
-                ],
-                "YoY Growth": ["+120%", "+84%", "+42%", "+38%"]
-            }
-            st.table(pd.DataFrame(fallback_data))
+    else:
+        st.info(f"Low global search noise for exact string. Displaying predictive models for {brand} {season}:")
+        fallback_data = {
+            "Status": ["🔥 Breakthrough", "☑️ Rising", "☑️ Rising", "☑️ Rising"],
+            "Item Name / Detail": [
+                f"{brand} Zero-Waste {apparel_type}", 
+                f"D5 Waterless Dyed {season} Blend", 
+                f"Recycled Denim Core {apparel_type} Basics", 
+                "Biodegradable Elastane Stretch Fit"
+            ],
+            "YoY Growth": ["+120%", "+84%", "+42%", "+38%"]
+        }
+        st.table(pd.DataFrame(fallback_data))
 
     # 3. TECHNICAL SPECIFICATIONS TABLE
     st.markdown("### Technical Product Specifications")
